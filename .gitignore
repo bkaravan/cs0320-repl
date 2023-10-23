@@ -1,0 +1,14 @@
+#Frontend ignored folders
+front/node_modules/
+front/playwright-report/
+front/test-results/
+front/.vscode
+
+#Backend ignored folders
+#IntelliJ default file
+back/.idea/
+#Maven
+back/target/
+back/.mvn
+back/.mvn-classpath
+back/pom.xml.bak
