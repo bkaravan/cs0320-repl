@@ -2,6 +2,7 @@ import "../styles/main.css";
 import { Dispatch, SetStateAction, isValidElement, useState } from "react";
 import { ControlledInput } from "./ControlledInput";
 import { data, searchdata } from "./MockData";
+import { loadTest } from "./REPLFunction";
 /**
  * This component is responsible for managing the input from the page, as well as processing the avaialbe commands.
  */
@@ -11,6 +12,7 @@ import { data, searchdata } from "./MockData";
 export interface REPLInputProps {
   commands: string[][][];
   file: string[][];
+//  setOut: Dispatch<SetStateAction<string>>;
   setFile: Dispatch<SetStateAction<string[][]>>;
   setHistory: Dispatch<SetStateAction<string[][][]>>;
 }
@@ -26,69 +28,76 @@ export function REPLInput(props: REPLInputProps) {
    * This function handles the submission entered by the user.
    * There is a switch case that works with a splitted input and processes the commands.
    */
+
+  // this should call the mapping from REPLFunction
   function handleSubmit(commandString: string) {
     setCount(count + 1);
     let viewFlag = false;
     let searchRes: string[][] = [[]];
     let splitInput = commandString.split(" ");
+    //let response = commandHandler(splitInput[0], splitInput.slice(1));
     let output = "Output: ";
+    let someOutput = loadTest();
+    console.log(someOutput);
+    output += someOutput;
 
-    switch (splitInput[0]) {
-      case "mode": {
-        setMode(!mode);
-        output += handleMode(mode);
-        break;
-      }
-      case "load_file": {
-        if (splitInput.length != 2) {
-          output += "Error: bad filepath!";
-        } else {
-          if (handleLoad(splitInput[1], props)) {
-            output = output + "load_file of " + splitInput[1] + " successful!";
-          } else {
-            output = output + "Could not find " + splitInput[1];
-          }
-        }
-        break;
-      }
-      case "view": {
-        //call view
-        if (splitInput.length != 1) {
-          output += "Error: view only takes in 1 argument. Take cs32 again!";
-          // break;
-        } else {
-          if (props.file[0].length !== 0) {
-            // check if we need the index
-            viewFlag = true;
-            output += "Successful view!";
-          } else {
-            output += "Error: no files were loaded.";
-          }
-        }
-        break;
-      }
-      case "search": {
-        if (splitInput.length !== 3) {
-          output += "Error: search needs three args";
-        } else {
-          if (props.file[0].length !== 0) {
-            searchRes = handleSearch(splitInput[1], splitInput[2]);
-            output += "Searching! :)";
-          } else {
-            output += "Error: search requires a load";
-          }
-        }
-        break;
-      }
-      default: {
-        output =
-          output +
-          "Error: bad command. " +
-          commandString +
-          " is not a real command";
-        break;
-      }
-    }
+    // switch (splitInput[0]) {
+    //   case "mode": {
+    //     setMode(!mode);
+    //     output += handleMode(mode);
+    //     break;
+    //   }
+    //   case "load_fil": {
+    //     if (splitInput.length != 2) {
+    //       output += "Error: bad filepath!";
+    //     } else {
+    //       if (handleLoad(splitInput[1], props)) {
+    //         output = output + "load_file of " + splitInput[1] + " successful!";
+    //       } else {
+    //         output = output + "Could not find " + splitInput[1];
+    //       }
+    //     }
+    //     break;
+    //   }
+    //   case "view": {
+    //     //call view
+    //     if (splitInput.length != 1) {
+    //       output += "Error: view only takes in 1 argument. Take cs32 again!";
+    //       // break;
+    //     } else {
+    //       if (props.file[0].length !== 0) {
+    //         // check if we need the index
+    //         viewFlag = true;
+    //         output += "Successful view!";
+    //       } else {
+    //         output += "Error: no files were loaded.";
+    //       }
+    //     }
+    //     break;
+    //   }
+    //   case "search": {
+    //     if (splitInput.length !== 3) {
+    //       output += "Error: search needs three args";
+    //     } else {
+    //       if (props.file[0].length !== 0) {
+    //         searchRes = handleSearch(splitInput[1], splitInput[2]);
+    //         output += "Searching! :)";
+    //       } else {
+    //         output += "Error: search requires a load";
+    //       }
+    //     }
+    //     break;
+    //   }
+    //   default: {
+    //     output =
+    //       output +
+    //       "Error: bad command. " +
+    //       commandString +
+    //       " is not a real command";
+    //     break;
+    //   }
+    // }
+    console.log(output);
     handleOutput(props, mode, viewFlag, output, splitInput, searchRes);
     setCommandString("");
   }
