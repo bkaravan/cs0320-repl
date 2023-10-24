@@ -1,13 +1,5 @@
-import "../styles/main.css";
-import { Dispatch, SetStateAction, isValidElement, useState } from "react";
-
 export interface REPLFunction {
-  (args: string[]): Promise<string | [string, string[][]]>;
-}
-
-export interface REPLFunctionProps {
-  output: string;
-  setOut: Dispatch<SetStateAction<string>>;
+  (args: string[]): Promise<[string, string[][]]>;
 }
 
 interface LoadProperties {
@@ -15,10 +7,29 @@ interface LoadProperties {
   loaded: string;
 }
 
-export function isLoadResponse(rjson: any): rjson is LoadProperties {
+function isLoadResponse(rjson: any): rjson is LoadProperties {
   if (!("result" in rjson)) return false;
   if (!("loaded" in rjson)) return false;
-  // we could check for more, but these 4 are all we care about today
+  return true;
+}
+
+interface ViewProperties {
+  result: string;
+  viewData: string[][];
+}
+
+interface ViewBadProperties {
+  error_type: string;
+  type: string;
+}
+
+function isViewResponse(
+  rjson: ViewBadProperties | ViewProperties
+): rjson is ViewProperties {
+  //return (rjson as ViewProperties).result !== undefined;
+  if (!("result" in rjson)) return false;
+  if (!("viewData" in rjson)) return false;
+
   return true;
 }
 
@@ -27,10 +38,31 @@ export const loadHandler: REPLFunction = (args: string[]) => {
   return fetch(url).then((response: Response) => {
     return response.json().then((json) => {
       if (isLoadResponse(json)) {
-        const output: string = json.loaded;
+        const output: [string, string[][]] = [
+          "Succesfully loaded " + json.loaded,
+          [],
+        ];
         return output;
       }
-      return "Error: bad request";
+      return ["Could not find file " + args[0], [[]]];
+    });
+  });
+};
+
+export const viewHandler: REPLFunction = (args: string[]) => {
+  const url = "http://localhost:3232/viewcsv";
+  return fetch(url).then((response: Response) => {
+    return response.json().then((json) => {
+      if (isViewResponse(json)) {
+        const output: [string, string[][]] = [
+          json.result + " view",
+          json.viewData,
+        ];
+        return output;
+      } else {
+        const output: [string, string[][]] = [json.error_type, []];
+        return output;
+      }
     });
   });
 };
@@ -38,7 +70,7 @@ export const loadHandler: REPLFunction = (args: string[]) => {
 const REPLMap: { [key: string]: REPLFunction } = {};
 REPLMap["load_file"] = loadHandler;
 // REPLMap["search"] = search;
-// REPLMap["view"] = view;
+REPLMap["view"] = viewHandler;
 // REPLMap["broadband"] = broadband;
 
 export function commandHandler(command: string, args: string[]) {
@@ -46,6 +78,6 @@ export function commandHandler(command: string, args: string[]) {
     const output = REPLMap[command](args);
     return output;
   } else {
-    return "Command " + command + " not found";
+    return Promise.reject(["Command " + command + " not found", []]);
   }
 }

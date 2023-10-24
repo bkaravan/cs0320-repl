@@ -9,7 +9,6 @@ import { REPLInput } from "./REPLInput";
 export default function REPL() {
   const [history, setHistory] = useState<string[][][]>([[[]]]); // history that records everything as a table
   const [file, setFile] = useState<string[][]>([[]]);
-  const [response, setResp] = useState<string>("");
 
   return (
     <div className="repl">

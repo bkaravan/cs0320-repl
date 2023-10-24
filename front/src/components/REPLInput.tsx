@@ -2,7 +2,7 @@ import "../styles/main.css";
 import { Dispatch, SetStateAction, isValidElement, useState } from "react";
 import { ControlledInput } from "./ControlledInput";
 import { data, searchdata } from "./MockData";
-import { commandHandler, isLoadResponse } from "./REPLFunction";
+import { commandHandler } from "./REPLFunction";
 /**
  * This component is responsible for managing the input from the page, as well as processing the avaialbe commands.
  */
@@ -32,12 +32,11 @@ export function REPLInput(props: REPLInputProps) {
   async function handleSubmit(commandString: string) {
     setCount(count + 1);
     let output = "Output: ";
-    let viewFlag = false;
-    let searchRes: string[][] = [[]];
+    let result: string[][] = [[]];
     let splitInput = commandString.split(" ");
     let response = await commandHandler(splitInput[0], splitInput.slice(1));
-    console.log(response);
-    output += response;
+    output += response[0];
+    result = response[1];
     // switch (splitInput[0]) {
     //   case "mode": {
     //     setMode(!mode);
@@ -94,7 +93,7 @@ export function REPLInput(props: REPLInputProps) {
     //     break;
     //   }
     // }
-    handleOutput(props, mode, viewFlag, output, splitInput, searchRes);
+    handleOutput(props, mode, output, splitInput, result);
     setCommandString("");
   }
 
@@ -159,20 +158,16 @@ export function handleSearch(arg1: string, arg2: string): string[][] {
 export function handleOutput(
   props: REPLInputProps,
   mode: boolean,
-  viewFlag: boolean,
   output: string,
   command: string[],
-  searchRes: string[][]
+  result: string[][]
 ): void {
   let outputArray: string[][];
   let newCommand = ["Command: "].concat(command);
   outputArray = [newCommand];
   outputArray = outputArray.concat([output.split(" ")]);
 
-  if (viewFlag) {
-    outputArray = outputArray.concat(props.file);
-  }
-  outputArray = outputArray.concat(searchRes);
+  outputArray = outputArray.concat(result);
 
   if (mode) {
     props.setHistory([...props.commands, outputArray.slice(1)]);
