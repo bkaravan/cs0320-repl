@@ -2,7 +2,7 @@ import "../styles/main.css";
 import { Dispatch, SetStateAction, isValidElement, useState } from "react";
 import { ControlledInput } from "./ControlledInput";
 import { data, searchdata } from "./MockData";
-import { loadTest } from "./REPLFunction";
+import { commandHandler, isLoadResponse } from "./REPLFunction";
 /**
  * This component is responsible for managing the input from the page, as well as processing the avaialbe commands.
  */
@@ -12,7 +12,6 @@ import { loadTest } from "./REPLFunction";
 export interface REPLInputProps {
   commands: string[][][];
   file: string[][];
-//  setOut: Dispatch<SetStateAction<string>>;
   setFile: Dispatch<SetStateAction<string[][]>>;
   setHistory: Dispatch<SetStateAction<string[][][]>>;
 }
@@ -30,17 +29,15 @@ export function REPLInput(props: REPLInputProps) {
    */
 
   // this should call the mapping from REPLFunction
-  function handleSubmit(commandString: string) {
+  async function handleSubmit(commandString: string) {
     setCount(count + 1);
+    let output = "Output: ";
     let viewFlag = false;
     let searchRes: string[][] = [[]];
     let splitInput = commandString.split(" ");
-    //let response = commandHandler(splitInput[0], splitInput.slice(1));
-    let output = "Output: ";
-    let someOutput = loadTest();
-    console.log(someOutput);
-    output += someOutput;
-
+    let response = await commandHandler(splitInput[0], splitInput.slice(1));
+    console.log(response);
+    output += response;
     // switch (splitInput[0]) {
     //   case "mode": {
     //     setMode(!mode);
@@ -97,7 +94,6 @@ export function REPLInput(props: REPLInputProps) {
     //     break;
     //   }
     // }
-    console.log(output);
     handleOutput(props, mode, viewFlag, output, splitInput, searchRes);
     setCommandString("");
   }
@@ -129,6 +125,7 @@ export function handleLoad(pathFile: string, props: REPLInputProps): boolean {
   }
   return false;
 }
+
 /**
  * This function works with switching the mode and does it, as well as returns the output
  * stating which mode the user swithed to.

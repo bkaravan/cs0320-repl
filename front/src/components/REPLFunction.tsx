@@ -2,7 +2,7 @@ import "../styles/main.css";
 import { Dispatch, SetStateAction, isValidElement, useState } from "react";
 
 export interface REPLFunction {
-  (args: string[]): Promise<String>;
+  (args: string[]): Promise<string | [string, string[][]]>;
 }
 
 export interface REPLFunctionProps {
@@ -15,12 +15,25 @@ interface LoadProperties {
   loaded: string;
 }
 
-function isLoadResponse(rjson: any): rjson is LoadProperties {
+export function isLoadResponse(rjson: any): rjson is LoadProperties {
   if (!("result" in rjson)) return false;
   if (!("loaded" in rjson)) return false;
   // we could check for more, but these 4 are all we care about today
   return true;
 }
+
+export const loadHandler: REPLFunction = (args: string[]) => {
+  const url = "http://localhost:3232/loadcsv?filepath=" + args[0];
+  return fetch(url).then((response: Response) => {
+    return response.json().then((json) => {
+      if (isLoadResponse(json)) {
+        const output: string = json.loaded;
+        return output;
+      }
+      return "Error: bad request";
+    });
+  });
+};
 
 const REPLMap: { [key: string]: REPLFunction } = {};
 REPLMap["load_file"] = loadHandler;
@@ -28,40 +41,11 @@ REPLMap["load_file"] = loadHandler;
 // REPLMap["view"] = view;
 // REPLMap["broadband"] = broadband;
 
-export function commandHandler(command: string, args: string[]): string {
+export function commandHandler(command: string, args: string[]) {
   if (REPLMap[command!]) {
-    let output = "1";
-    let promise = REPLMap[command](args);
+    const output = REPLMap[command](args);
     return output;
   } else {
     return "Command " + command + " not found";
   }
-}
-
-function loadHandler(args: string[]): Promise<String> {
-  const url = "http://localhost:3232/loadcsv?filepath=data/csvtest/test.csv";
-  return fetch(url).then((response: Response) => {
-    return response.json();
-  });
-}
-
-function load(fetchedJson: Promise<String>): string {
-  let output = "";
-  let fetchedJson2 = loadHandler([]);
-  fetchedJson2.then((response) => {
-    if (isLoadResponse(response)) {
-      console.log(response);
-      const variable: string = response.result;
-      console.log(variable);
-      output += variable;
-      output += "3";
-      return response.result;
-    }
-    output += "faile";
-  });
-  return output;
-}
-
-export function loadTest(): string {
-  return load(loadHandler([]));
 }
