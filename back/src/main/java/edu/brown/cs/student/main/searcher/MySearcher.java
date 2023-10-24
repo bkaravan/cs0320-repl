@@ -54,12 +54,12 @@ public class MySearcher {
         try {
           this.narrowIndex = Integer.parseInt(this.narrow.substring(4).strip());
           if (this.narrowIndex >= this.dataset.get(0).size()) {
-            System.err.println("Please make sure that you provide a valid Index");
+            //System.err.println("Please make sure that you provide a valid Index");
             this.found.add(Arrays.asList("Please make sure that you provide a valid Index".split(" ")));
             this.narrowIndex = -2;
           }
         } catch (NumberFormatException e) {
-          System.err.println("Please make sure to use an integer after Ind: ");
+          //System.err.println("Please make sure to use an integer after Ind: ");
           this.found.add(Arrays.asList("Please make sure to use an integer after Ind:".split(" ")));
           this.narrowIndex = -2;
         }
@@ -68,7 +68,7 @@ public class MySearcher {
         if (this.isHeader) {
           this.narrowIndex = this.dataset.get(0).indexOf(this.narrow.substring(4).strip());
         } else {
-          System.err.println("Please only search by column name when the header row is present");
+          //System.err.println("Please only search by column name when the header row is present");
           this.found.add(Arrays.asList("Please only search by column name when the header row is present".split(" ")));
           this.narrowIndex = -2;
         }

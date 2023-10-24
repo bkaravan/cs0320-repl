@@ -119,10 +119,7 @@ const searchHandler: REPLFunction = (args: string[]) => {
         ];
         return output;
       } else {
-        const output: [string, string[][]] = [
-          json.error_type + " " + json.error_arg,
-          [],
-        ];
+        const output: [string, string[][]] = [json.error_type, []];
         return output;
       }
     });
