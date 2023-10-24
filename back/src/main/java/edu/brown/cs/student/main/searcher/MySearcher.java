@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.searcher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,11 +55,13 @@ public class MySearcher {
           this.narrowIndex = Integer.parseInt(this.narrow.substring(4).strip());
           if (this.narrowIndex >= this.dataset.get(0).size()) {
             System.err.println("Please make sure that you provide a valid Index");
-            throw new IllegalArgumentException("Please provide a valid index");
+            this.found.add(Arrays.asList("Please make sure that you provide a valid Index".split(" ")));
+            this.narrowIndex = -2;
           }
         } catch (NumberFormatException e) {
           System.err.println("Please make sure to use an integer after Ind: ");
-          throw new NumberFormatException("Please make sure to use an integer after Ind:");
+          this.found.add(Arrays.asList("Please make sure to use an integer after Ind:".split(" ")));
+          this.narrowIndex = -2;
         }
       }
       case "nam:" -> {
@@ -66,7 +69,8 @@ public class MySearcher {
           this.narrowIndex = this.dataset.get(0).indexOf(this.narrow.substring(4).strip());
         } else {
           System.err.println("Please only search by column name when the header row is present");
-          throw new IllegalArgumentException("Searching by column name without header row");
+          this.found.add(Arrays.asList("Please only search by column name when the header row is present".split(" ")));
+          this.narrowIndex = -2;
         }
       }
       default -> this.narrowIndex = -1;
@@ -111,10 +115,12 @@ public class MySearcher {
    */
   public void findRows(String toFind) {
     this.found = new ArrayList<>();
-    if (this.narrowIndex == -1) {
-      this.allSearch(toFind);
-    } else {
-      this.indexSearch(toFind);
+    if (this.narrowIndex != -2) {
+      if (this.narrowIndex == -1) {
+        this.allSearch(toFind);
+      } else {
+        this.indexSearch(toFind);
+      }
     }
   }
 
