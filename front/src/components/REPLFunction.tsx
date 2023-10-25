@@ -83,11 +83,9 @@ function isSearchResponse(rjson: any): rjson is SearchGoodResponse {
 }
 
 function argSetup(args: string[]): string[] {
-  console.log(args.length);
   if (args.length < 3) {
     args = [...args, "false"];
   }
-  console.log(args);
   let narrow = args[0];
   let index: number = parseInt(narrow);
   if (Number.isNaN(index)) {
@@ -132,11 +130,55 @@ const searchHandler: REPLFunction = (args: string[]) => {
   });
 };
 
+interface BroadBandGoodResponse {
+  result: string;
+  county: string;
+  broadband_access: string;
+  state: string;
+  timestamp: string;
+}
+
+function isBroadbandResponse(rjson: any): rjson is BroadBandGoodResponse {
+  if (!("result" in rjson)) return false;
+  if (!("county" in rjson)) return false;
+  if (!("broadband_access" in rjson)) return false;
+  if (!("state" in rjson)) return false;
+  if (!("timestamp" in rjson)) return false;
+  return true;
+}
+
+const broadbandHandler: REPLFunction = (args: string[]) => {
+  if (args.length < 2) {
+    return Promise.resolve([
+      "Not enough args for broadband, expected a state and a county",
+      [],
+    ]);
+  }
+  console.log(args);
+  const url =
+    "http://localhost:3232/broadband?state=" + args[0] + "&county=" + args[1];
+  console.log(url);
+  return fetch(url).then((response: Response) => {
+    return response.json().then((json) => {
+      if (isBroadbandResponse(json)) {
+        const output: [string, string[][]] = [
+          json.result + " search",
+          [[json.county, json.broadband_access, json.state, json.timestamp]],
+        ];
+        return output;
+      } else {
+        const output: [string, string[][]] = [json.error_type, []]; // specify county or state
+        return output;
+      }
+    });
+  });
+};
+
 const REPLMap: { [key: string]: REPLFunction } = {};
 REPLMap["load_file"] = loadHandler;
 REPLMap["search"] = searchHandler;
 REPLMap["view"] = viewHandler;
-// REPLMap["broadband"] = broadband;
+REPLMap["broadband"] = broadbandHandler;
 // REPLMap["mode"] = modeHanlder;
 
 export function commandHandler(command: string, args: string[]) {

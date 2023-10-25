@@ -1,5 +1,11 @@
 import "../styles/main.css";
-import { Dispatch, SetStateAction, isValidElement, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  isValidElement,
+  useState,
+  useEffect,
+} from "react";
 import { ControlledInput } from "./ControlledInput";
 import { data, searchdata } from "./MockData";
 import { commandHandler } from "./REPLFunction";
@@ -28,6 +34,20 @@ export function REPLInput(props: REPLInputProps) {
    * There is a switch case that works with a splitted input and processes the commands.
    */
 
+  // this is for oneTime empty load, but it does not quite work
+
+  // useEffect(() => {
+  //   async function fetchEmptyLoad() {
+  //     const rest = await fetch(
+  //       "http://localhost:3232/loadcsv?filepath=data/csvtest/duplicate.csv"
+  //     );
+  //     const json = rest.json();
+  //     const emptyFile: string[][] = await json["loaded"];
+  //     props.setFile(emptyFile);
+  //   }
+  //   fetchEmptyLoad();
+  // }, []);
+
   // this should call the mapping from REPLFunction
   async function handleSubmit(commandString: string) {
     setCount(count + 1);
@@ -40,7 +60,7 @@ export function REPLInput(props: REPLInputProps) {
     } else {
       let response = await commandHandler(splitInput[0], splitInput.slice(1));
       output += response[0];
-      result = response[1];
+      result = response[1]; // make this work with setFile? Will allow mocking?
     }
 
     // switch (splitInput[0]) {
