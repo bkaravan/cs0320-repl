@@ -34,9 +34,15 @@ export function REPLInput(props: REPLInputProps) {
     let output = "Output: ";
     let result: string[][] = [[]];
     let splitInput = commandString.split(" ");
-    let response = await commandHandler(splitInput[0], splitInput.slice(1));
-    output += response[0];
-    result = response[1];
+    if (splitInput[0] == "mode") {
+      setMode(!mode);
+      output += handleMode(mode);
+    } else {
+      let response = await commandHandler(splitInput[0], splitInput.slice(1));
+      output += response[0];
+      result = response[1];
+    }
+
     // switch (splitInput[0]) {
     //   case "mode": {
     //     setMode(!mode);

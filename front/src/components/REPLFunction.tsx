@@ -2,6 +2,10 @@ export interface REPLFunction {
   (args: string[]): Promise<[string, string[][]]>;
 }
 
+interface MODEfunction {
+  (mode: boolean): string;
+}
+
 interface LoadProperties {
   result: string;
   loaded: string;
@@ -79,9 +83,11 @@ function isSearchResponse(rjson: any): rjson is SearchGoodResponse {
 }
 
 function argSetup(args: string[]): string[] {
-  if (args.length == 2) {
-    args.concat("false");
+  console.log(args.length);
+  if (args.length < 3) {
+    args = [...args, "false"];
   }
+  console.log(args);
   let narrow = args[0];
   let index: number = parseInt(narrow);
   if (Number.isNaN(index)) {
@@ -131,12 +137,13 @@ REPLMap["load_file"] = loadHandler;
 REPLMap["search"] = searchHandler;
 REPLMap["view"] = viewHandler;
 // REPLMap["broadband"] = broadband;
+// REPLMap["mode"] = modeHanlder;
 
 export function commandHandler(command: string, args: string[]) {
   if (REPLMap[command!]) {
     const output = REPLMap[command](args);
     return output;
   } else {
-    return Promise.reject(["Command " + command + " not found", []]);
+    return Promise.resolve(["Command " + command + " not found", [[]]]);
   }
 }
