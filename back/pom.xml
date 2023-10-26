@@ -25,13 +25,13 @@
   <dependencies>
 
     <!--
-           We use Moshi for serialization/deserialization of JSON data.
-           Moshi 1.13.0 was released in December 2021.
-           We'll also use Moshi's adapters package, which includes pre-built adapters
-           for quite a few things, including polymorphic adapters.
-           The adapters README.md includes a "latest.version" version; replaced with
-           latest version as of August 2022.
-       -->
+               We use Moshi for serialization/deserialization of JSON data.
+               Moshi 1.13.0 was released in December 2021.
+               We'll also use Moshi's adapters package, which includes pre-built adapters
+               for quite a few things, including polymorphic adapters.
+               The adapters README.md includes a "latest.version" version; replaced with
+               latest version as of August 2022.
+           -->
     <dependency>
       <groupId>com.squareup.moshi</groupId>
       <artifactId>moshi</artifactId>
@@ -44,9 +44,9 @@
     </dependency>
 
     <!--
-           Spark is a lightweight framework for creating web applications.
-           Spark is most commonly used to create APIs and websites.
-    -->
+               Spark is a lightweight framework for creating web applications.
+               Spark is most commonly used to create APIs and websites.
+        -->
     <dependency>
       <groupId>com.sparkjava</groupId>
       <artifactId>spark-core</artifactId>
@@ -54,8 +54,8 @@
     </dependency>
 
     <!--
-           TestNG builds useful functionality on top of JUnit, such as method annotations.
-    -->
+               TestNG builds useful functionality on top of JUnit, such as method annotations.
+        -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
@@ -64,12 +64,13 @@
     </dependency>
 
     <!--
-           JUnit is a unit testing library for Java.
-    -->
+               JUnit is a unit testing library for Java.
+        -->
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.4.0</version>
+      <artifactId>junit-jupiter</artifactId>
+      <version>RELEASE</version>
       <scope>test</scope>
     </dependency>
 
@@ -77,21 +78,21 @@
   <build>
     <plugins>
       <!--
-            The Compiler Plugin is used to compile the sources of your project.
-      -->
+                  The Compiler Plugin is used to compile the sources of your project.
+            -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
+          <source>16</source>
+          <target>16</target>
         </configuration>
       </plugin>
 
       <!--
-            We use Spotless to automate style checking and code formatting.
-      -->
+                  We use Spotless to automate style checking and code formatting.
+            -->
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -124,8 +125,8 @@
       </plugin>
 
       <!--
-            We use SortPom to apply ordering and formatting to this pom.xml file.
-      -->
+                  We use SortPom to apply ordering and formatting to this pom.xml file.
+            -->
       <plugin>
         <groupId>com.github.ekryd.sortpom</groupId>
         <artifactId>sortpom-maven-plugin</artifactId>
@@ -150,8 +151,8 @@
       </plugin>
 
       <!--
-           We use SpotBugs to detect bugs automatically.
-      -->
+                 We use SpotBugs to detect bugs automatically.
+            -->
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
@@ -167,8 +168,8 @@
       </plugin>
 
       <!-- The Site Plugin is used to generate an HTML representation of
-      the project's metadata. The generated HTML also includes the project's
-      reports that were configured in the POM. -->
+            the project's metadata. The generated HTML also includes the project's
+            reports that were configured in the POM. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
@@ -202,8 +203,8 @@
       </plugin>
 
       <!-- The Surefire Plugin is used during the test phase of
-      the build lifecycle to execute the unit tests of an application.
-      It generates reports in TXT and XML formats. -->
+            the build lifecycle to execute the unit tests of an application.
+            It generates reports in TXT and XML formats. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -256,9 +257,9 @@
     <plugins>
 
       <!--
-          Plugin used to report on project dependencies.
-          https://maven.apache.org/plugins/maven-project-info-reports-plugin/.
-      -->
+                Plugin used to report on project dependencies.
+                https://maven.apache.org/plugins/maven-project-info-reports-plugin/.
+            -->
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>2.7</version>
@@ -271,9 +272,9 @@
       </plugin>
 
       <!--
-          Maven JXR plugin used with PMD plugin for referencing code errors.
-          https://maven.apache.org/jxr/maven-jxr-plugin/.
-      -->
+                Maven JXR plugin used with PMD plugin for referencing code errors.
+                https://maven.apache.org/jxr/maven-jxr-plugin/.
+            -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
@@ -281,9 +282,9 @@
       </plugin>
 
       <!--
-          Javadoc plugin for generating javadoc site.
-          https://maven.apache.org/plugins/maven-javadoc-plugin/.
-      -->
+                Javadoc plugin for generating javadoc site.
+                https://maven.apache.org/plugins/maven-javadoc-plugin/.
+            -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -301,9 +302,9 @@
       </plugin>
 
       <!--
-          PMD looks for bad coding practices such as unused variables.
-          https://maven.apache.org/plugins/maven-pmd-plugin/.
-      -->
+                PMD looks for bad coding practices such as unused variables.
+                https://maven.apache.org/plugins/maven-pmd-plugin/.
+            -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
@@ -311,9 +312,9 @@
       </plugin>
 
       <!--
-          JaCoCo creates a "coverage" report, so you can see what
-          lines of codes and branches your tests exercise.
-      -->
+                JaCoCo creates a "coverage" report, so you can see what
+                lines of codes and branches your tests exercise.
+            -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
