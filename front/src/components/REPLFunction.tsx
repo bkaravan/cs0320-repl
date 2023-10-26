@@ -127,17 +127,15 @@ const searchHandler: REPLFunction = (args: string[]) => {
 
 interface BroadBandGoodResponse {
   result: string;
-  county: string;
-  broadband_access: string;
-  state: string;
+  address: string;
+  bbNumber: string;
   timestamp: string;
 }
 
 function isBroadbandResponse(rjson: any): rjson is BroadBandGoodResponse {
   if (!("result" in rjson)) return false;
-  if (!("county" in rjson)) return false;
-  if (!("broadband_access" in rjson)) return false;
-  if (!("state" in rjson)) return false;
+  if (!("address" in rjson)) return false;
+  if (!("bbNumber" in rjson)) return false;
   if (!("timestamp" in rjson)) return false;
   return true;
 }
@@ -157,8 +155,8 @@ const broadbandHandler: REPLFunction = (args: string[]) => {
     return response.json().then((json) => {
       if (isBroadbandResponse(json)) {
         const output: [string, string[][]] = [
-          json.result + " search",
-          [[json.county, json.broadband_access, json.state, json.timestamp]],
+          json.result + " broadband",
+          [[json.address, json.bbNumber, json.timestamp]],
         ];
         return output;
       } else {
