@@ -5,6 +5,7 @@ import static spark.Spark.put;
 
 import edu.brown.cs.student.main.handler.LoadCensusHandler;
 import edu.brown.cs.student.main.handler.LoadHandler;
+import edu.brown.cs.student.main.handler.ReloadHandler;
 import edu.brown.cs.student.main.handler.SearchHandler;
 import edu.brown.cs.student.main.handler.ViewHandler;
 import edu.brown.cs.student.main.parser.FactoryFailureException;
@@ -43,6 +44,7 @@ public class Main {
     Spark.get("viewcsv", new ViewHandler(csvStorage));
     Spark.get("searchcsv", new SearchHandler(csvStorage));
     Spark.get("broadband", new LoadCensusHandler(csvStorage));
+    Spark.get("reload", new ReloadHandler(csvStorage));
 
     Spark.init();
     Spark.awaitInitialization();
