@@ -11,7 +11,7 @@ export default function REPL() {
   const [file, setFile] = useState<string[][]>([[]]);
 
   return (
-    <div className="repl">
+    <div className="repl" aria-label="High component">
       <REPLHistory commands={history} />
       <hr></hr>
       <REPLInput
