@@ -156,7 +156,7 @@ const broadbandHandler: REPLFunction = (args: string[]) => {
       if (isBroadbandResponse(json)) {
         const output: [string, string[][]] = [
           json.result + " broadband",
-          [[json.address, json.bbNumber, json.timestamp]],
+          [[json.address, "bb number: " + json.bbNumber, json.timestamp]],
         ];
         return output;
       } else {
