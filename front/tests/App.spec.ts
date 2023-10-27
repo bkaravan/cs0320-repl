@@ -8,26 +8,55 @@ import * as childProcess from "child_process";
   Look for this pattern in the tests below!
  */
 let serverProcess: childProcess.ChildProcess | null = null;
-test.beforeEach(async ({ page }) => {
-  serverProcess = childProcess.spawn("mvn", ["exec:java"], {
-    cwd: "../back",
+
+function startServer(): childProcess.ChildProcess {
+  const command = "java";
+  const args = ["-cp", "back/src/main/java", "edu.brown.cs.student.main.Main"];
+  const options = {
+    cwd: "../../", // Move two directories above the current directory
     shell: true,
+  };
+
+  console.log("Starting Java server...");
+  console.log("Command:", command);
+  console.log("Arguments:", args);
+  console.log("Options:", options);
+
+  const serverProcess = childProcess.spawn(command, args, options);
+
+  serverProcess.stdout.on("data", (data) => {
+    console.log(`Java server stdout: ${data}`);
   });
-  await page.waitForTimeout(1000);
-  await page.goto("http://localhost:2020/viewcsv");
+
+  serverProcess.stderr.on("data", (data) => {
+    console.error(`Java server stderr: ${data}`);
+  });
+
+  serverProcess.on("close", (code) => {
+    console.log(`Java server process exited with code ${code}`);
+  });
+
+  return serverProcess;
+}
+
+// Function to stop the Java server process
+function stopServer(server: childProcess.ChildProcess): void {
+  server.kill("SIGTERM");
+}
+
+test.beforeEach(async ({ page }) => {
+  serverProcess = startServer();
+  await page.waitForTimeout(10000);
+  await page.goto("http://localhost:2020/");
   await page.goto("http://localhost:8000/");
 });
 
 // If you needed to do something before every test case...
-test.beforeEach(async ({ page }) => {
-  // ... you'd put it here.
-  // TODO: Is there something we need to do before every test case to avoid repeating code?
-});
 
 test.afterAll(() => {
   // Stop the server after all tests are done
   if (serverProcess) {
-    serverProcess.kill();
+    stopServer(serverProcess);
   }
 });
 
