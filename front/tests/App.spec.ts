@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-
+import * as childProcess from "child_process";
 /**
   The general shapes of tests in Playwright Test are:
     1. Navigate to a URL
@@ -7,12 +7,28 @@ import { test, expect } from "@playwright/test";
     3. Assert something about the page against your expectations
   Look for this pattern in the tests below!
  */
+let serverProcess: childProcess.ChildProcess | null = null;
+test.beforeEach(async ({ page }) => {
+  serverProcess = childProcess.spawn("mvn", ["exec:java"], {
+    cwd: "../back",
+    shell: true,
+  });
+  await page.waitForTimeout(1000);
+  await page.goto("http://localhost:2020/viewcsv");
+  await page.goto("http://localhost:8000/");
+});
 
 // If you needed to do something before every test case...
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:8000/");
   // ... you'd put it here.
   // TODO: Is there something we need to do before every test case to avoid repeating code?
+});
+
+test.afterAll(() => {
+  // Stop the server after all tests are done
+  if (serverProcess) {
+    serverProcess.kill();
+  }
 });
 
 /**
@@ -71,7 +87,7 @@ test("after I click the button, its label increments", async ({ page }) => {
  */
 test("has title", async ({ page }) => {
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Mock/);
+  await expect(page).toHaveTitle(/REPL/);
 });
 /**
  * This test checks that an empty submit results in an error.
@@ -135,12 +151,14 @@ test("failing invalid load", async ({ page }) => {
 test("good single load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file way");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/stars/ten-star.csv");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
   ).toBeVisible();
 });
 /**
@@ -200,7 +218,7 @@ test("failing invalid view", async ({ page }) => {
   await page.getByLabel("Command input").fill("view");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Error:nofileswereloaded." })
+    page.locator("table").filter({ hasText: "Output:error_datasource" })
   ).toBeVisible();
 });
 // view with a good load
