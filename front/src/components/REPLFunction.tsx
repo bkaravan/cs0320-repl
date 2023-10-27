@@ -167,12 +167,34 @@ const broadbandHandler: REPLFunction = (args: string[]) => {
   });
 };
 
+interface LoadProperties {
+  reload: string;
+}
+
+function isReloadResponse(rjson: any): rjson is LoadProperties {
+  if (!("reload" in rjson)) return false;
+  return true;
+}
+
+const reloadHandler: REPLFunction = (args: string[]) => {
+  const url = "http://localhost:2020/reload";
+  return fetch(url).then((response: Response) => {
+    return response.json().then((json) => {
+      if (isReloadResponse(json)) {
+        const output: [string, string[][]] = [json.reload, []];
+        return output;
+      }
+      return ["Bad response ", []];
+    });
+  });
+};
+
 const REPLMap: { [key: string]: REPLFunction } = {};
 REPLMap["load_file"] = loadHandler;
 REPLMap["search"] = searchHandler;
 REPLMap["view"] = viewHandler;
 REPLMap["broadband"] = broadbandHandler;
-// REPLMap["mode"] = modeHanlder;
+REPLMap["reload"] = reloadHandler;
 
 export function commandHandler(
   command: string,

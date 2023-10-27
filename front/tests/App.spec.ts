@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import * as childProcess from "child_process";
 /**
   The general shapes of tests in Playwright Test are:
     1. Navigate to a URL
@@ -7,58 +6,21 @@ import * as childProcess from "child_process";
     3. Assert something about the page against your expectations
   Look for this pattern in the tests below!
  */
-let serverProcess: childProcess.ChildProcess | null = null;
-
-function startServer(): childProcess.ChildProcess {
-  const command = "java";
-  const args = ["-cp", "back/src/main/java", "edu.brown.cs.student.main.Main"];
-  const options = {
-    cwd: "../../", // Move two directories above the current directory
-    shell: true,
-  };
-
-  console.log("Starting Java server...");
-  console.log("Command:", command);
-  console.log("Arguments:", args);
-  console.log("Options:", options);
-
-  const serverProcess = childProcess.spawn(command, args, options);
-
-  serverProcess.stdout.on("data", (data) => {
-    console.log(`Java server stdout: ${data}`);
-  });
-
-  serverProcess.stderr.on("data", (data) => {
-    console.error(`Java server stderr: ${data}`);
-  });
-
-  serverProcess.on("close", (code) => {
-    console.log(`Java server process exited with code ${code}`);
-  });
-
-  return serverProcess;
-}
-
-// Function to stop the Java server process
-function stopServer(server: childProcess.ChildProcess): void {
-  server.kill("SIGTERM");
-}
 
 test.beforeEach(async ({ page }) => {
-  serverProcess = startServer();
-  await page.waitForTimeout(10000);
   await page.goto("http://localhost:2020/");
   await page.goto("http://localhost:8000/");
 });
 
 // If you needed to do something before every test case...
 
-test.afterAll(() => {
-  // Stop the server after all tests are done
-  if (serverProcess) {
-    stopServer(serverProcess);
-  }
-});
+// test.afterAll(async ({ page }) => {
+//   // Stop the server after all tests are done
+//   await page.getByLabel("Command input").click();
+//   await page.getByLabel("Command input").fill("reload");
+//   await page.getByRole("button").click();
+//   await page.goto("http://localhost:2020/reload");
+// });
 
 /**
  * Don't worry about the "async" yet. We'll cover it in more detail
@@ -249,6 +211,7 @@ test("failing invalid view", async ({ page }) => {
   await expect(
     page.locator("table").filter({ hasText: "Output:error_datasource" })
   ).toBeVisible();
+  await page.goto("http://localhost:2020/reload");
 });
 // view with a good load
 /**

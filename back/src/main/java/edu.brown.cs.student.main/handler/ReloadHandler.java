@@ -34,10 +34,10 @@ public class ReloadHandler implements Route {
    * @throws Exception -- throws an exception in case of an error in the serialization.
    */
   @Override
-  public Object handle(Request request, Response response) throws Exception {
+  public Object handle(Request request, Response response) {
 
     this.storage.loadData(data);
-    return new SuccessResponse("Successful Reload ").serialize();
+    return new SuccessResponseReload("Successful Reload ").serialize();
   }
 
   public record SuccessResponseReload(String reload) {
