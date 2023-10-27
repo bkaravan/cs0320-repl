@@ -14,13 +14,13 @@ test.beforeEach(async ({ page }) => {
 
 // If you needed to do something before every test case...
 
-// test.afterAll(async ({ page }) => {
-//   // Stop the server after all tests are done
-//   await page.getByLabel("Command input").click();
-//   await page.getByLabel("Command input").fill("reload");
-//   await page.getByRole("button").click();
-//   await page.goto("http://localhost:2020/reload");
-// });
+test.afterEach(async ({ page }) => {
+  // Stop the server after all tests are done
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("reload");
+  await page.getByRole("button").click();
+  await page.goto("http://localhost:2020/reload");
+});
 
 /**
  * Don't worry about the "async" yet. We'll cover it in more detail
@@ -86,9 +86,7 @@ test("has title", async ({ page }) => {
 test("supports empty submit", async ({ page }) => {
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
-    page
-      .locator("table")
-      .filter({ hasText: "Output:Error:badcommand.isnotarealcommand" })
+    page.locator("table").filter({ hasText: "Output:Commandnotfound" })
   ).toBeVisible();
 });
 /**
@@ -132,7 +130,9 @@ test("failing invalid load", async ({ page }) => {
   await page.getByLabel("Command input").fill("load_file badfile");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
+    page
+      .locator("table")
+      .filter({ hasText: "Output:Error:Invalidoremptyfilename" })
   ).toBeVisible();
 });
 /**
@@ -159,21 +159,25 @@ test("good single load", async ({ page }) => {
 test("double load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file way");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/stars/ten-star.csv");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
   ).toBeVisible();
   // second load
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file fire");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/testData/abc.csv");
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileoffiresuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/testData/abc.csv" })
   ).toBeVisible();
 });
 // loading one good and one bad file
@@ -184,19 +188,23 @@ test("double load", async ({ page }) => {
 test("double invalid load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file way");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/stars/ten-star.csv");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
   ).toBeVisible();
   // second load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file badfile");
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
+    page
+      .locator("table")
+      .filter({ hasText: "Output:Error:Invalidoremptyfilename" })
   ).toBeVisible();
 });
 /**
@@ -211,7 +219,6 @@ test("failing invalid view", async ({ page }) => {
   await expect(
     page.locator("table").filter({ hasText: "Output:error_datasource" })
   ).toBeVisible();
-  await page.goto("http://localhost:2020/reload");
 });
 // view with a good load
 /**
@@ -220,25 +227,24 @@ test("failing invalid view", async ({ page }) => {
 test("good view", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file way");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/stars/ten-star.csv");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
   ).toBeVisible();
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Successfulview!" })
+    page.locator("table").filter({ hasText: "Output:successview" })
   ).toBeVisible();
   await expect(
-    page.locator("table").filter({ hasText: "12345" })
-  ).toBeVisible();
-  await expect(
-    page.locator("table").filter({ hasText: "Iwantitthatway" })
+    page.locator("table").filter({ hasText: "0Sol000" })
   ).toBeVisible();
 });
 // view with a bad load
@@ -250,13 +256,15 @@ test("failing view with bad load", async ({ page }) => {
   await page.getByLabel("Command input").fill("load_file badfile");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
+    page
+      .locator("table")
+      .filter({ hasText: "Output:Error:Invalidoremptyfilename" })
   ).toBeVisible(); //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Error:nofileswereloaded." })
+    page.locator("table").filter({ hasText: "Output:error_datasource" })
   ).toBeVisible();
 });
 // view with >1 arg
@@ -269,15 +277,15 @@ test("failing view with many args", async ({ page }) => {
   await page.getByLabel("Command input").fill("load_file badfile");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
+    page
+      .locator("table")
+      .filter({ hasText: "Output:Error:Invalidoremptyfilename" })
   ).toBeVisible(); //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view file");
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
-    page.locator("table").filter({
-      hasText: "Output:Error:viewonlytakesin1argument.Takecs32again!",
-    })
+    page.locator("table").filter({ hasText: "Output:error_datasource" })
   ).toBeVisible();
 });
 // view with two good loads & view twice diff things
@@ -288,38 +296,45 @@ test("failing view with many args", async ({ page }) => {
 test("good view twice", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file way");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/stars/ten-star.csv");
   await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
   ).toBeVisible();
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
-    page
-      .locator("table")
-      .filter({ hasText: "Output:Successfulview!12345Iwantitthatway" })
+    page.locator("table").filter({ hasText: "Output:successview" })
   ).toBeVisible();
+  await expect(
+    page.locator("table").filter({ hasText: "0Sol000" })
+  ).toBeVisible();
+  //second laod
   await page.getByLabel("Command input").click();
-  await page.getByLabel("Command input").fill("load_file noheader");
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/testData/abc.csv");
   await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:load_fileofnoheadersuccessful!" })
+      .filter({ hasText: "Output:Success!File:data/testData/abc.csv" })
   ).toBeVisible();
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
   await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
-    page.locator("table").filter({
-      hasText: "Output:Successfulview!KevinCIT32JoeMetCalf330CarlaBarus32",
-    })
+    page.locator("table").filter({ hasText: "Output:successview" })
+  ).toBeVisible();
+  await expect(
+    page.locator("table").filter({ hasText: "abcdefghijkl" })
   ).toBeVisible();
 });
 /**
@@ -700,3 +715,8 @@ test("valid name search with load", async ({ page }) => {
   // c
   await expect(page.locator("tr").filter({ hasText: "0Sol000" })).toBeVisible();
 });
+
+//BROADBAND TESTING
+// LOAD + BROADBAND
+// COMBOS OF LOCAL/API
+//search for a keyword that has many occurances in the file

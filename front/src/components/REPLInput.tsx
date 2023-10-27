@@ -56,7 +56,7 @@ export function REPLInput(props: REPLInputProps) {
     let output = "Output: ";
     let result: string[][] = [[]];
     let splitInput = commandString.split(" ");
-    if (mock) {
+    if (!mock) {
       if (splitInput[0] == "mode") {
         setMode(!mode);
         output += handleMode(mode);
@@ -65,65 +65,63 @@ export function REPLInput(props: REPLInputProps) {
         output += response[0];
         result = response[1]; // make this work with setFile? Will allow mocking?
       }
-    } else {
-      // switch (splitInput[0]) {
-      //   case "mode": {
-      //     setMode(!mode);
-      //     output += handleMode(mode);
-      //     break;
-      //   }
-      //   case "load_fil": {
-      //     if (splitInput.length != 2) {
-      //       output += "Error: bad filepath!";
-      //     } else {
-      //       if (handleLoad(splitInput[1], props)) {
-      //         output = output + "load_file of " + splitInput[1] + " successful!";
-      //       } else {
-      //         output = output + "Could not find " + splitInput[1];
-      //       }
-      //     }
-      //     break;
-      //   }
-      //   case "view": {
-      //     //call view
-      //     if (splitInput.length != 1) {
-      //       output += "Error: view only takes in 1 argument. Take cs32 again!";
-      //       // break;
-      //     } else {
-      //       if (props.file[0].length !== 0) {
-      //         // check if we need the index
-      //         viewFlag = true;
-      //         output += "Successful view!";
-      //       } else {
-      //         output += "Error: no files were loaded.";
-      //       }
-      //     }
-      //     break;
-      //   }
-      //   case "search": {
-      //     if (splitInput.length !== 3) {
-      //       output += "Error: search needs three args";
-      //     } else {
-      //       if (props.file[0].length !== 0) {
-      //         searchRes = handleSearch(splitInput[1], splitInput[2]);
-      //         output += "Searching! :)";
-      //       } else {
-      //         output += "Error: search requires a load";
-      //       }
-      //     }
-      //     break;
-      //   }
-      //   default: {
-      //     output =
-      //       output +
-      //       "Error: bad command. " +
-      //       commandString +
-      //       " is not a real command";
-      //     break;
-      //   }
-      // }
     }
-
+    // switch (splitInput[0]) {
+    //   case "mode": {
+    //     setMode(!mode);
+    //     output += handleMode(mode);
+    //     break;
+    //   }
+    //   case "load_fil": {
+    //     if (splitInput.length != 2) {
+    //       output += "Error: bad filepath!";
+    //     } else {
+    //       if (handleLoad(splitInput[1], props)) {
+    //         output = output + "load_file of " + splitInput[1] + " successful!";
+    //       } else {
+    //         output = output + "Could not find " + splitInput[1];
+    //       }
+    //     }
+    //     break;
+    //   }
+    //   case "view": {
+    //     //call view
+    //     if (splitInput.length != 1) {
+    //       output += "Error: view only takes in 1 argument. Take cs32 again!";
+    //       // break;
+    //     } else {
+    //       if (props.file[0].length !== 0) {
+    //         // check if we need the index
+    //         viewFlag = true;
+    //         output += "Successful view!";
+    //       } else {
+    //         output += "Error: no files were loaded.";
+    //       }
+    //     }
+    //     break;
+    //   }
+    //   case "search": {
+    //     if (splitInput.length !== 3) {
+    //       output += "Error: search needs three args";
+    //     } else {
+    //       if (props.file[0].length !== 0) {
+    //         searchRes = handleSearch(splitInput[1], splitInput[2]);
+    //         output += "Searching! :)";
+    //       } else {
+    //         output += "Error: search requires a load";
+    //       }
+    //     }
+    //     break;
+    //   }
+    //   default: {
+    //     output =
+    //       output +
+    //       "Error: bad command. " +
+    //       commandString +
+    //       " is not a real command";
+    //     break;
+    //   }
+    // }
     handleOutput(props, mode, output, splitInput, result);
     setCommandString("");
   }
