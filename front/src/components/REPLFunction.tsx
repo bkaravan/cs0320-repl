@@ -1,20 +1,37 @@
+/**
+ * This interface sets up the format of the REPLFunction's output.
+ */
 export interface REPLFunction {
   (args: string[]): Promise<[string, string[][]]>;
 }
-
+/**
+ * This interface checks the mode.
+ */
 interface MODEfunction {
   (mode: boolean): string;
 }
-
+/**
+ * This interface checks the properties of the Load.
+ */
 interface LoadProperties {
   filepath: string;
 }
-
+/**
+ * This function checks if the LoadResponse is a valid response that can be processed.
+ *
+ * @param rjson -- does the filepath exist.
+ * @returns -- boolean whether the response is valid.
+ */
 function isLoadResponse(rjson: any): rjson is LoadProperties {
   if (!("filepath" in rjson)) return false;
   return true;
 }
-
+/**
+ * This function handles the load by fetching the load query from the backend server.
+ *
+ * @param args -- arguments that are being handed in, the filepath.
+ * @returns -- a Promise, that contains the response, either success or error.
+ */
 const loadHandler: REPLFunction = (args: string[]) => {
   const url = "http://localhost:2020/loadcsv?filepath=" + args[0];
   return fetch(url).then((response: Response) => {
@@ -27,17 +44,29 @@ const loadHandler: REPLFunction = (args: string[]) => {
     });
   });
 };
-
+/**
+ * This interface checks the properties of view.
+ */
 interface ViewProperties {
   result: string;
   view_data: string[][];
 }
+
+/**
+ * This interface checks for bad properties.
+ */
 
 interface ViewBadProperties {
   error_type: string;
   type: string;
 }
 
+/**
+ * This function checks if the response for view is valid.
+ *
+ * @param rjson -- the response.
+ * @returns -- boolean whether the response is valid.
+ */
 function isViewResponse(
   rjson: ViewBadProperties | ViewProperties
 ): rjson is ViewProperties {
@@ -47,6 +76,12 @@ function isViewResponse(
 
   return true;
 }
+
+/**
+ * This function handles the view by fetching it from our back-end.
+ * @param args -- the argumnents that are getting passed in.
+ * @returns -- A promise with a response of success or error.
+ */
 
 const viewHandler: REPLFunction = (args: string[]) => {
   const url = "http://localhost:2020/viewcsv";
@@ -66,16 +101,33 @@ const viewHandler: REPLFunction = (args: string[]) => {
   });
 };
 
+/**
+ * This interfaces checks whether the response to search is valid.
+ */
+
 interface SearchGoodResponse {
   result: string;
   data: string[][];
 }
-
+/**
+ * This function checks the validity of the search response.
+ *
+ * @param rjson -- the response.
+ * @returns --boolean whether the response is valid.
+ */
 function isSearchResponse(rjson: any): rjson is SearchGoodResponse {
   if (!("result" in rjson)) return false;
   if (!("data" in rjson)) return false;
   return true;
 }
+
+/**
+ * This function handles setting up the arguments and checking whether the lenght is permittable, as well as
+ * differentiating between columns and indeces.
+ *
+ * @param args -- the arguments passed in.
+ * @returns -- the "parsed"/processed arguments.
+ */
 
 function argSetup(args: string[]): string[] {
   if (args.length < 3) {
@@ -92,6 +144,12 @@ function argSetup(args: string[]): string[] {
   return args;
 }
 
+/**
+ * This function handles search.
+ *
+ * @param args -- parsed arguments.
+ * @returns -- a Promise with a response.
+ */
 const searchHandler: REPLFunction = (args: string[]) => {
   if (args.length < 2 || args.length > 3) {
     return Promise.resolve([
@@ -125,6 +183,9 @@ const searchHandler: REPLFunction = (args: string[]) => {
   });
 };
 
+/**
+ * This interfaces checks for broadband responses.
+ */
 interface BroadBandGoodResponse {
   result: string;
   address: string;
@@ -132,6 +193,12 @@ interface BroadBandGoodResponse {
   timestamp: string;
 }
 
+/**
+ * This function checks whether the broadband respones is valid.
+ *
+ * @param rjson -- the response.
+ * @returns -- boolean whether the response is valid.
+ */
 function isBroadbandResponse(rjson: any): rjson is BroadBandGoodResponse {
   if (!("result" in rjson)) return false;
   if (!("address" in rjson)) return false;
@@ -140,6 +207,11 @@ function isBroadbandResponse(rjson: any): rjson is BroadBandGoodResponse {
   return true;
 }
 
+/**
+ * This function handles the broadband by calling our back end or displaying error messages.
+ * @param args -- the arguments passed in.
+ * @returns  -- a Promise with the response.
+ */
 const broadbandHandler: REPLFunction = (args: string[]) => {
   if (args.length < 2) {
     return Promise.resolve([
@@ -167,15 +239,30 @@ const broadbandHandler: REPLFunction = (args: string[]) => {
   });
 };
 
+/**
+ * This interface checks the properties of the load.
+ */
+
 interface LoadProperties {
   reload: string;
 }
 
+/**
+ * This function checks whether the response to the reload is valid.
+ * @param rjson -- the response to check.
+ * @returns -- boolean whether the response is valid.
+ */
 function isReloadResponse(rjson: any): rjson is LoadProperties {
   if (!("reload" in rjson)) return false;
   return true;
 }
 
+/**
+ * This function handles reloading the page through our back end for the purposes of clean integration testing.
+ *
+ * @param args -- the arguments
+ * @returns -- the response.
+ */
 const reloadHandler: REPLFunction = (args: string[]) => {
   const url = "http://localhost:2020/reload";
   return fetch(url).then((response: Response) => {
@@ -189,6 +276,9 @@ const reloadHandler: REPLFunction = (args: string[]) => {
   });
 };
 
+/**
+ * This map contains references from a string representation of a command to an actual function.
+ */
 const REPLMap: { [key: string]: REPLFunction } = {};
 REPLMap["load_file"] = loadHandler;
 REPLMap["search"] = searchHandler;
@@ -196,6 +286,13 @@ REPLMap["view"] = viewHandler;
 REPLMap["broadband"] = broadbandHandler;
 REPLMap["reload"] = reloadHandler;
 
+/**
+ * This function handles the commands that are being passed in.
+ *
+ * @param command -- the command.
+ * @param args -- the arguments.
+ * @returns -- an output that is a command with a call of the arguments passed in or an error message for an invalid command.
+ */
 export function commandHandler(
   command: string,
   args: string[]

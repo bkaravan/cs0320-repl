@@ -746,6 +746,9 @@ test("broadband good", async ({ page }) => {
     page.locator("td").filter({ hasText: "Yolo County,  California" })
   ).toBeVisible();
 });
+/**
+ * This test checks that broadband works with a valid input that is incomplete (a 2 word state only has one word).
+ */
 
 test("broadband good -- incomplete search", async ({ page }) => {
   // switch the mode for practice
@@ -759,6 +762,9 @@ test("broadband good -- incomplete search", async ({ page }) => {
     page.locator("td").filter({ hasText: "Providence County,  Rhode Island" })
   ).toBeVisible();
 });
+/**
+ * This test checks that broadband fails when a non-existent state is inputed.
+ */
 
 test("broadband fail -- non-existent state search", async ({ page }) => {
   // switch the mode for practice
@@ -769,6 +775,9 @@ test("broadband fail -- non-existent state search", async ({ page }) => {
     page.locator("table").filter({ hasText: "Output:seekingstateKyivnotfound" })
   ).toBeVisible();
 });
+/**
+ * This test checks that broadband fails when a non-existent county is inputed.
+ */
 
 test("broadband fail -- non-existent county search", async ({ page }) => {
   // switch the mode for practice
@@ -783,6 +792,9 @@ test("broadband fail -- non-existent county search", async ({ page }) => {
 });
 
 // LOAD + BROADBAND
+/**
+ * This test checks that broadband works with a valid input and combines with the load, view commands in various orders.
+ */
 test("good load, view + broadband", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
@@ -815,7 +827,9 @@ test("good load, view + broadband", async ({ page }) => {
     page.locator("td").filter({ hasText: "Yolo County,  California" })
   ).toBeVisible();
 });
-
+/**
+ * This test checks that broadband works with a valid input and combines with the load, view commands in various orders.
+ */
 test("broadband + good load, view + broadband", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("broadband Rhode Providence");
@@ -857,7 +871,9 @@ test("broadband + good load, view + broadband", async ({ page }) => {
     page.locator("td").filter({ hasText: "Yolo County,  California" })
   ).toBeVisible();
 });
-
+/**
+ * This test checks that broadband works with a valid input and combines with the load, view commands in various orders.
+ */
 test("good load, view + broadband", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("broadband Rhode Providence");

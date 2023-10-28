@@ -40,7 +40,7 @@ export function REPLInput(props: REPLInputProps) {
   // useEffect(() => {
   //   async function fetchEmptyLoad() {
   //     // const rest = await fetch(
-  //     //   "http://localhost:3232/loadcsv?filepath=data/csvtest/duplicate.csv"
+  //     //   "http://localhost:3232/loadcsv?filepath=data/csvtest/empty.csv"
   //     // );
   //     // const json = rest.json();
   //     // const emptyFile: string[][] = await json["loaded"];
@@ -57,6 +57,7 @@ export function REPLInput(props: REPLInputProps) {
     let output = "Output: ";
     let result: string[][] = [[]];
     let splitInput = commandString.split(" ");
+    // this if statement is needed to switch to the mock mode
     if (splitInput[0] == "mock") {
       setMock(!mock);
       if (mock) {
@@ -65,6 +66,8 @@ export function REPLInput(props: REPLInputProps) {
         output += "mock server";
       }
     } else {
+      // this if statement checks the state of the mock, and decides whether
+      // we are using mocked data or actual API calls
       if (!mock) {
         if (splitInput[0] == "mode") {
           setMode(!mode);
@@ -78,6 +81,9 @@ export function REPLInput(props: REPLInputProps) {
           result = response[1]; // make this work with setFile? Will allow mocking?
         }
       } else {
+        // We know that the purpose of registrating commands is to get rid of the switch case,
+        // but we could not figure out how to do mocking without it. So, we have a nice and pretty handling
+        // of the input above, and a bit uglier way to handle mock inputs here
         switch (splitInput[0]) {
           case "mode": {
             setMode(!mode);
@@ -139,6 +145,7 @@ export function REPLInput(props: REPLInputProps) {
       }
     }
 
+    //decide what to print based on what happened before
     handleOutput(props, mode, output, splitInput, result, viewFlag);
     setCommandString("");
   }
@@ -223,8 +230,10 @@ export function handleOutput(
   }
 
   if (mode) {
+    //for brief mode
     props.setHistory([...props.commands, outputArray.slice(1)]);
   } else {
+    //for verbose mode
     props.setHistory([...props.commands, outputArray]);
   }
 }
