@@ -15,7 +15,7 @@ interface Props {
 const TableComponent: React.FC<Props> = ({ data }) => {
   return (
     <table className="centered-table">
-      <tbody>
+      <tbody tabIndex={0}>
         {data.map((row, rowIndex) => (
           <tr key={rowIndex}>
             {row.map((cell, cellIndex) => (

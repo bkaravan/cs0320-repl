@@ -1,5 +1,3 @@
-import { Dispatch } from "react";
-import React, { Component } from "react";
 import "../styles/main.css";
 import TableComponent from "./TableComponent";
 /**
@@ -17,9 +15,13 @@ interface REPLHistoryProps {
  */
 export function REPLHistory(props: REPLHistoryProps) {
   return (
-    <div className="repl-history">
+    <div
+      className="repl-history"
+      aria-label="Table that contains every output"
+      tabIndex={1}
+    >
       {props.commands.map((command, index) => (
-        <TableComponent data={command} />
+        <TableComponent data={command} key={index} />
       ))}
     </div>
   );
