@@ -93,9 +93,9 @@ function argSetup(args: string[]): string[] {
 }
 
 const searchHandler: REPLFunction = (args: string[]) => {
-  if (args.length < 2) {
+  if (args.length < 2 || args.length > 3) {
     return Promise.resolve([
-      "Not enough args for search, expected column identifier and a target word",
+      "Search expects a column identifier, a target word and an optional header",
       [],
     ]);
   }
