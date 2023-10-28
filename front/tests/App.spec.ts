@@ -730,7 +730,7 @@ test("valid search multiple occur", async ({ page }) => {
       .filter({ hasText: "Output:successsearchbohdansecondleft" })
   ).toBeVisible();
 });
-//BROADBAND TESTING
+
 /**
  * This test checks that broadband works with a valid input.
  */
@@ -747,6 +747,10 @@ test("broadband good", async ({ page }) => {
   ).toBeVisible();
 });
 
+/**
+ * Test for a good broadband even with incomplete state name
+ */
+
 test("broadband good -- incomplete search", async ({ page }) => {
   // switch the mode for practice
   await page.getByLabel("Command input").click();
@@ -760,6 +764,10 @@ test("broadband good -- incomplete search", async ({ page }) => {
   ).toBeVisible();
 });
 
+/**
+ * test for failing broadband with bad state
+ */
+
 test("broadband fail -- non-existent state search", async ({ page }) => {
   // switch the mode for practice
   await page.getByLabel("Command input").click();
@@ -769,7 +777,9 @@ test("broadband fail -- non-existent state search", async ({ page }) => {
     page.locator("table").filter({ hasText: "Output:seekingstateKyivnotfound" })
   ).toBeVisible();
 });
-
+/**
+ * test for a failing broadband
+ */
 test("broadband fail -- non-existent county search", async ({ page }) => {
   // switch the mode for practice
   await page.getByLabel("Command input").click();
@@ -782,7 +792,9 @@ test("broadband fail -- non-existent county search", async ({ page }) => {
   ).toBeVisible();
 });
 
-// LOAD + BROADBAND
+/**
+ * Tets for load, view, and broadband
+ */
 test("good load, view + broadband", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
@@ -815,6 +827,10 @@ test("good load, view + broadband", async ({ page }) => {
     page.locator("td").filter({ hasText: "Yolo County,  California" })
   ).toBeVisible();
 });
+
+/**
+ * this test checks that we can do broadband query, load, view, and then broadband again
+ */
 
 test("broadband + good load, view + broadband", async ({ page }) => {
   await page.getByLabel("Command input").click();
@@ -858,6 +874,10 @@ test("broadband + good load, view + broadband", async ({ page }) => {
   ).toBeVisible();
 });
 
+/**
+ * This test checks the combination of calling load, view, and broadband
+ */
+
 test("good load, view + broadband", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("broadband Rhode Providence");
@@ -890,5 +910,100 @@ test("good load, view + broadband", async ({ page }) => {
     page.locator("table").filter({ hasText: "0Sol000" })
   ).toBeVisible();
 });
-// COMBOS OF LOCAL/API
-// mock / not mock testing
+
+/**
+ * This test checks that we can succesfully switch to the mock mode after inputting
+ * some commands to call the API
+ */
+
+test("from server to mock", async ({ page }) => {
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("broadband Rhode Providence");
+  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await expect(
+    page.locator("table").filter({ hasText: "Output:successbroadband" })
+  ).toBeVisible();
+  await expect(
+    page.locator("td").filter({ hasText: "Providence County,  Rhode Island" })
+  ).toBeVisible();
+  //mock
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mock");
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  //load mocked
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("load_file way");
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await expect(
+    page
+      .locator("table")
+      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+  ).toBeVisible();
+  //view mocked
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("view");
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
+  await expect(
+    page.locator("table").filter({ hasText: "Output:Successfulview!" })
+  ).toBeVisible();
+  await expect(
+    page.locator("table").filter({ hasText: "12345" })
+  ).toBeVisible();
+  await expect(
+    page.locator("table").filter({ hasText: "Iwantitthatway" })
+  ).toBeVisible();
+});
+
+/**
+ * This test checks the functionality of switching to the mock mode and coming
+ * back to fetching real API data
+ */
+
+test("from server to mock to server", async ({ page }) => {
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("broadband Rhode Providence");
+  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await expect(
+    page.locator("table").filter({ hasText: "Output:successbroadband" })
+  ).toBeVisible();
+  await expect(
+    page.locator("td").filter({ hasText: "Providence County,  Rhode Island" })
+  ).toBeVisible();
+  //mock
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mock");
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  //load mocked
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("load_file way");
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await expect(
+    page
+      .locator("table")
+      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
+  ).toBeVisible();
+  //mock again
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mock");
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
+  await page.getByLabel("Command input").click();
+  await page
+    .getByLabel("Command input")
+    .fill("load_file data/stars/ten-star.csv");
+  await page.getByRole("button", { name: "Submitted 4 times" }).click();
+  await expect(
+    page
+      .locator("table")
+      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
+  ).toBeVisible();
+  //view
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("view");
+  await page.getByRole("button", { name: "Submitted 5 times" }).click();
+  await expect(
+    page.locator("table").filter({ hasText: "Output:successview" })
+  ).toBeVisible();
+  await expect(
+    page.locator("table").filter({ hasText: "0Sol000" })
+  ).toBeVisible();
+});
