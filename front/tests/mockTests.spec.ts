@@ -8,8 +8,10 @@ import { test, expect } from "@playwright/test";
  */
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:2020/");
   await page.goto("http://localhost:8000/");
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mock");
+  await page.getByRole("button", { name: "Submitted 0 times" }).click();
 });
 
 // If you needed to do something before every test case...
@@ -53,7 +55,7 @@ test("after I type into the input box, its text changes", async ({ page }) => {
  */
 test("on page load, i see a button", async ({ page }) => {
   await expect(
-    page.getByRole("button", { name: "Submitted 0 times" })
+    page.getByRole("button", { name: "Submitted 1 times" })
   ).toBeVisible();
 });
 /**
@@ -62,29 +64,22 @@ test("on page load, i see a button", async ({ page }) => {
  */
 test("after I click the button, its label increments", async ({ page }) => {
   await expect(
-    page.getByRole("button", { name: "Submitted 0 times" })
+    page.getByRole("button", { name: "Submitted 1 times" })
   ).toBeVisible();
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
   await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await page.getByRole("button", { name: "Submitted 3 times" }).click();
+  await page.getByRole("button", { name: "Submitted 4 times" }).click();
   await expect(
-    page.getByRole("button", { name: "Submitted 4 times" })
+    page.getByRole("button", { name: "Submitted 5 times" })
   ).toBeVisible();
 });
 
 /**
- * This test checks that the "Mock" title is visible and is on the page.
- */
-test("has title", async ({ page }) => {
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/REPL/);
-});
-/**
  * This test checks that an empty submit results in an error.
  */
 test("supports empty submit", async ({ page }) => {
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -97,7 +92,7 @@ test("supports empty submit", async ({ page }) => {
 test("supports mode switching", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Modeswitchedtoverbose" })
   ).toBeVisible();
@@ -110,14 +105,14 @@ test("multiple submits", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Modeswitchedtoverbose" })
   ).toBeVisible();
   // second submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Modeswitchedtobrief" })
   ).toBeVisible();
@@ -130,7 +125,7 @@ test("failing invalid load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file badfile");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
   ).toBeVisible();
@@ -142,14 +137,12 @@ test("failing invalid load", async ({ page }) => {
 test("good single load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
-  await page
-    .getByLabel("Command input")
-    .fill("load_file data/stars/ten-star.csv");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByLabel("Command input").fill("load_file way");
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
-      .filter({ hasText: "Output:Success!File:data/stars/ten-star.csv" })
+      .filter({ hasText: "Output:load_fileofwaysuccessful!" })
   ).toBeVisible();
 });
 /**
@@ -160,7 +153,7 @@ test("double load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -169,7 +162,7 @@ test("double load", async ({ page }) => {
   // second load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file fire");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page
       .locator("table")
@@ -185,7 +178,7 @@ test("double invalid load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -194,7 +187,7 @@ test("double invalid load", async ({ page }) => {
   // second load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file badfile");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
   ).toBeVisible();
@@ -207,9 +200,9 @@ test("failing invalid view", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
-    page.locator("table").filter({ hasText: "Output:error_datasource" })
+    page.locator("table").filter({ hasText: "Output:Error:nofileswereloaded" })
   ).toBeVisible();
   await page.goto("http://localhost:2020/reload");
 });
@@ -221,7 +214,7 @@ test("good view", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -230,7 +223,7 @@ test("good view", async ({ page }) => {
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Successfulview!" })
   ).toBeVisible();
@@ -248,13 +241,13 @@ test("good view", async ({ page }) => {
 test("failing view with bad load", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file badfile");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
   ).toBeVisible(); //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Error:nofileswereloaded." })
   ).toBeVisible();
@@ -267,13 +260,13 @@ test("failing view with bad load", async ({ page }) => {
 test("failing view with many args", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file badfile");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
   ).toBeVisible(); //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view file");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page.locator("table").filter({
       hasText: "Output:Error:viewonlytakesin1argument.Takecs32again!",
@@ -289,7 +282,7 @@ test("good view twice", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -298,7 +291,7 @@ test("good view twice", async ({ page }) => {
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page
       .locator("table")
@@ -306,7 +299,7 @@ test("good view twice", async ({ page }) => {
   ).toBeVisible();
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file noheader");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page
       .locator("table")
@@ -315,7 +308,7 @@ test("good view twice", async ({ page }) => {
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 3 times" }).click();
+  await page.getByRole("button", { name: "Submitted 4 times" }).click();
   await expect(
     page.locator("table").filter({
       hasText: "Output:Successfulview!KevinCIT32JoeMetCalf330CarlaBarus32",
@@ -331,14 +324,14 @@ test("view with bad and good load", async ({ page }) => {
   //first submit
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file badfile");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Couldnotfindbadfile" })
   ).toBeVisible();
   // second load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file noheader");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page
       .locator("table")
@@ -346,7 +339,7 @@ test("view with bad and good load", async ({ page }) => {
   ).toBeVisible();
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page.locator("table").filter({
       hasText: "Output:Successfulview!KevinCIT32JoeMetCalf330CarlaBarus32",
@@ -360,7 +353,7 @@ test("view with bad and good load", async ({ page }) => {
 test("fails search without load & bad input", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search 1second");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -373,7 +366,7 @@ test("fails search without load & bad input", async ({ page }) => {
 test("fails search without load & bad args", async ({ page }) => {
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search 1 second");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -388,7 +381,7 @@ test("valid search with view and load", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -397,7 +390,7 @@ test("valid search with view and load", async ({ page }) => {
   //view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page
       .locator("table")
@@ -406,7 +399,7 @@ test("valid search with view and load", async ({ page }) => {
   // search
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search 1 want");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page
       .locator("table")
@@ -421,7 +414,7 @@ test("valid index search with load", async ({ page }) => {
   //load
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -430,7 +423,7 @@ test("valid index search with load", async ({ page }) => {
   // search
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search 1 want");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page
       .locator("table")
@@ -445,7 +438,7 @@ test("failed bad search with load", async ({ page }) => {
   //load an existing file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -454,7 +447,7 @@ test("failed bad search with load", async ({ page }) => {
   // search an invalid input
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search bad input");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   // expect to see error and show the arguments
   await expect(
     page.locator("table").filter({
@@ -479,7 +472,7 @@ test("failed bad search too many args", async ({ page }) => {
   //load an existing file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -488,7 +481,7 @@ test("failed bad search too many args", async ({ page }) => {
   // search with more than two key inputs
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search bad input long");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   // expect an error
   await expect(
     page.locator("table").filter({
@@ -504,7 +497,7 @@ test("failed bad search not enough args", async ({ page }) => {
   // load a proper file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file way");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page
       .locator("table")
@@ -513,7 +506,7 @@ test("failed bad search not enough args", async ({ page }) => {
   // search only one argument
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search bad");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   // expect to see an error
   await expect(
     page.locator("table").filter({
@@ -529,7 +522,7 @@ test("failed invalid command", async ({ page }) => {
   //fill the box with an unreal command
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("badcommand");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   //expect an informative error message
   await expect(
     page.locator("table").filter({
@@ -546,14 +539,14 @@ test("valid search with load verbose", async ({ page }) => {
   // switch mode to verbose
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:modeswitchedtoverbose" })
   ).toBeVisible();
   // load an example file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file ex2");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   await expect(
     page.locator("tr").filter({ hasText: "Command: load_fileex2" })
   ).toBeVisible();
@@ -563,14 +556,14 @@ test("valid search with load verbose", async ({ page }) => {
   // show that search is correct
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search 1 second");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page.locator("tr").filter({ hasText: "jakesecondright" })
   ).toBeVisible();
   //expect view to not break
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 3 times" }).click();
+  await page.getByRole("button", { name: "Submitted 4 times" }).click();
 });
 
 /**
@@ -582,14 +575,14 @@ test("brief to verbose to brief", async ({ page }) => {
   // switch mode to verbose
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:modeswitchedtoverbose" })
   ).toBeVisible();
   await page.getByLabel("Command input").click();
   // switch mode again
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   //expect both command and output
   await expect(
     page.locator("tr").filter({ hasText: "Command: mode" })
@@ -600,7 +593,7 @@ test("brief to verbose to brief", async ({ page }) => {
   // load a file and expect only an output now
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file stars");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page
       .locator("table")
@@ -617,14 +610,14 @@ test("view with an empty load", async ({ page }) => {
   // switch the mode for practice
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:modeswitchedtoverbose" })
   ).toBeVisible();
   //load the empty file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file empty");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   // expect both command and output because of verbose
   await expect(
     page.locator("tr").filter({ hasText: "Command: load_fileempty" })
@@ -635,7 +628,7 @@ test("view with an empty load", async ({ page }) => {
   // view shows an error
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Error:nofileswereloaded" })
   ).toBeVisible();
@@ -650,7 +643,7 @@ test("view with one column shape", async ({ page }) => {
   // switch the mode for more testing
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   // expect mode change
   await expect(
     page.locator("table").filter({ hasText: "Output:modeswitchedtoverbose" })
@@ -658,7 +651,7 @@ test("view with one column shape", async ({ page }) => {
   //load a file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file col");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   //expect command and output because of the mode switch
   await expect(
     page.locator("tr").filter({ hasText: "Command: load_filecol" })
@@ -669,7 +662,7 @@ test("view with one column shape", async ({ page }) => {
   // view the file and expect to see only one value in rows
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
+  await page.getByRole("button", { name: "Submitted 3 times" }).click();
   await expect(
     page.locator("table").filter({ hasText: "Output:Successfulview!" })
   ).toBeVisible();
@@ -686,7 +679,7 @@ test("valid name search with load", async ({ page }) => {
   //load a file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("load_file stars");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
+  await page.getByRole("button", { name: "Submitted 1 times" }).click();
   //check that it's there
   await expect(
     page
@@ -696,7 +689,7 @@ test("valid name search with load", async ({ page }) => {
   // search the file with a column name
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("search ProperName Sol");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
+  await page.getByRole("button", { name: "Submitted 2 times" }).click();
   // c
   await expect(page.locator("tr").filter({ hasText: "0Sol000" })).toBeVisible();
 });
