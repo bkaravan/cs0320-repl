@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import edu.brown.cs.student.main.handlers.BroadbandHandler;
-import edu.brown.cs.student.main.handlers.LoadHandler;
-import edu.brown.cs.student.main.handlers.SearchHandler;
-import edu.brown.cs.student.main.handlers.ViewHandler;
-import edu.brown.cs.student.main.server.Dataset;
+//import edu.brown.cs.student.main.handlers.BroadbandHandler;
+//import edu.brown.cs.student.main.handlers.LoadHandler;
+//import edu.brown.cs.student.main.handlers.SearchHandler;
+//import edu.brown.cs.student.main.handlers.ViewHandler;
+//import edu.brown.cs.student.main.server.Dataset;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okio.Buffer;
@@ -58,34 +59,34 @@ class TestingServer {
    * Shared state for all tests. We create a setup for spark to see our handlers, and also
    * set up our mocked data for test usage
    */
-  @BeforeEach
-  public void setup() {
-    // Re-initialize state, etc. for _every_ test method run
-
-    // In fact, restart the entire Spark server for every test!
-    Dataset csvData = new Dataset();
-    Spark.get("loadcsv", new LoadHandler(csvData));
-    Spark.get("viewcsv", new ViewHandler(csvData));
-    Spark.get("searchcsv", new SearchHandler(csvData));
-    Spark.get("broadband", new BroadbandHandler());
-
-    /// MOCK SETUP ///
-    Dataset current = new Dataset();
-    List<List<String>> exampledata = new ArrayList<>();
-    String[] array1 = {"first", "Second", "third"};
-    String[] array2 = {"first1", "Second2", "third3"};
-    ArrayList<String> example1 = new ArrayList<>(Arrays.asList(array1));
-    ArrayList<String> example2 = new ArrayList<>(Arrays.asList(array2));
-    exampledata.add(example1);
-    exampledata.add(example2);
-    current.setDataset(exampledata);
-    Spark.get("loadcsv2", new LoadHandler(current));
-    Spark.get("viewcsv2", new ViewHandler(current));
-    Spark.get("searchcsv2", new SearchHandler(current));
-
-    Spark.init();
-    Spark.awaitInitialization(); // don't continue until the server is listening
-  }
+//  @BeforeEach
+//  public void setup() {
+//    // Re-initialize state, etc. for _every_ test method run
+//
+//    // In fact, restart the entire Spark server for every test!
+//    Dataset csvData = new Dataset();
+//    Spark.get("loadcsv", new LoadHandler(csvData));
+//    Spark.get("viewcsv", new ViewHandler(csvData));
+//    Spark.get("searchcsv", new SearchHandler(csvData));
+//    Spark.get("broadband", new BroadbandHandler());
+//
+//    /// MOCK SETUP ///
+//    Dataset current = new Dataset();
+//    List<List<String>> exampledata = new ArrayList<>();
+//    String[] array1 = {"first", "Second", "third"};
+//    String[] array2 = {"first1", "Second2", "third3"};
+//    ArrayList<String> example1 = new ArrayList<>(Arrays.asList(array1));
+//    ArrayList<String> example2 = new ArrayList<>(Arrays.asList(array2));
+//    exampledata.add(example1);
+//    exampledata.add(example2);
+//    current.setDataset(exampledata);
+//    Spark.get("loadcsv2", new LoadHandler(current));
+//    Spark.get("viewcsv2", new ViewHandler(current));
+//    Spark.get("searchcsv2", new SearchHandler(current));
+//
+//    Spark.init();
+//    Spark.awaitInitialization(); // don't continue until the server is listening
+//  }
 
   /**
    * Teardown and stop Spark after each test
@@ -828,4 +829,30 @@ class TestingServer {
     assertEquals("no match found", response.error_type);
     assertEquals("NOTHERE", response.search_word);
   }
+
+  public static class GeoResponse {
+    public String type;
+    public Map<String, Object> geometry;
+    public Map<String, String> properties;
+  }
+
+  @Test
+  public void  geoResponseTest() throws IOException {
+    String json = new String(Files.readAllBytes(Paths.get("data/Mocks/mocktest2.json")));
+    Moshi moshi = new Moshi.Builder().build();
+
+    JsonAdapter<GeoResponse> adapter = moshi.adapter(GeoResponse.class);
+    GeoResponse response = adapter.fromJson(json);
+    ArrayList<Double> test = new ArrayList<>();
+    test.add(125.6);
+    test.add(10.1);
+
+    assertEquals("Feature", response.type);
+    assertEquals("Point", response.geometry.get("type"));
+    assertEquals(test, response.geometry.get("coordinates"));
+  }
+
 }
+
+
+
